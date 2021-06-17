@@ -14,6 +14,7 @@ CENTER_LAT, CENTER_LON = -14.272572694355336, -51.25567404158474
 
 # =====================================================================
 # Data Generation
+
 # df = pd.read_csv("HIST_PAINEL_COVIDBR_15jun2021.csv", sep=";")
 # df_states = df[(~df["estado"].isna()) & (df["codmun"].isna())]
 # df_brasil = df[df["regiao"] == "Brasil"]
@@ -22,6 +23,7 @@ CENTER_LAT, CENTER_LON = -14.272572694355336, -51.25567404158474
 
 # =====================================================================
 # Data Load
+
 df_states = pd.read_csv("df_states.csv")
 df_brasil = pd.read_csv("df_brasil.csv")
 
@@ -36,17 +38,16 @@ select_columns = {"casosAcumulado": "Casos Acumulados",
                   "obitosAcumulado": "Óbitos Totais",
                   "obitosNovos": "Óbitos por dia"}
 
+
 # =====================================================================
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 fig = px.choropleth_mapbox(df_states_, locations="estado",
-                           geojson=brazil_states, center={"lat": -16.95, "lon": -47.78},
-                           # https://www.google.com/maps/ -> right click -> get lat/lon
+                           geojson=brazil_states, center={"lat": -16.95, "lon": -47.78}, # https://www.google.com/maps/ -> right click -> get lat/lon
                            zoom=4, color="casosNovos", color_continuous_scale="Redor", opacity=0.4,
                            hover_data={"casosAcumulado": True, "casosNovos": True, "obitosNovos": True, "estado": True}
                            )
 fig.update_layout(
-    # mapbox_accesstoken=token,
     paper_bgcolor="#242424",
     mapbox_style="carto-darkmatter",
     autosize=True,
@@ -65,6 +66,7 @@ fig2.update_layout(
 
 # =====================================================================
 # Layout
+
 app.layout = dbc.Container(
     children=[
         dbc.Row([
@@ -170,24 +172,18 @@ app.layout = dbc.Container(
     ], [Input("date-picker", "date"), Input("location-button", "children")]
 )
 def display_status(date, location):
-    # print(location, date)
     if location == "BRASIL":
         df_data_on_date = df_brasil[df_brasil["data"] == date]
     else:
         df_data_on_date = df_states[(df_states["estado"] == location) & (df_states["data"] == date)]
 
-    recuperados_novos = "-" if df_data_on_date["Recuperadosnovos"].isna().values[
-        0] else f'{int(df_data_on_date["Recuperadosnovos"].values[0]):,}'.replace(",", ".")
-    acompanhamentos_novos = "-" if df_data_on_date["emAcompanhamentoNovos"].isna().values[
-        0] else f'{int(df_data_on_date["emAcompanhamentoNovos"].values[0]):,}'.replace(",", ".")
-    casos_acumulados = "-" if df_data_on_date["casosAcumulado"].isna().values[
-        0] else f'{int(df_data_on_date["casosAcumulado"].values[0]):,}'.replace(",", ".")
-    casos_novos = "-" if df_data_on_date["casosNovos"].isna().values[
-        0] else f'{int(df_data_on_date["casosNovos"].values[0]):,}'.replace(",", ".")
-    obitos_acumulado = "-" if df_data_on_date["obitosAcumulado"].isna().values[
-        0] else f'{int(df_data_on_date["obitosAcumulado"].values[0]):,}'.replace(",", ".")
-    obitos_novos = "-" if df_data_on_date["obitosNovos"].isna().values[
-        0] else f'{int(df_data_on_date["obitosNovos"].values[0]):,}'.replace(",", ".")
+    recuperados_novos = "-" if df_data_on_date["Recuperadosnovos"].isna().values[0] else f'{int(df_data_on_date["Recuperadosnovos"].values[0]):,}'.replace(",", ".")
+    acompanhamentos_novos = "-" if df_data_on_date["emAcompanhamentoNovos"].isna().values[0] else f'{int(df_data_on_date["emAcompanhamentoNovos"].values[0]):,}'.replace(",", ".")
+    casos_acumulados = "-" if df_data_on_date["casosAcumulado"].isna().values[0] else f'{int(df_data_on_date["casosAcumulado"].values[0]):,}'.replace(",", ".")
+    casos_novos = "-" if df_data_on_date["casosNovos"].isna().values[0] else f'{int(df_data_on_date["casosNovos"].values[0]):,}'.replace(",", ".")
+    obitos_acumulado = "-" if df_data_on_date["obitosAcumulado"].isna().values[0] else f'{int(df_data_on_date["obitosAcumulado"].values[0]):,}'.replace(",", ".")
+    obitos_novos = "-" if df_data_on_date["obitosNovos"].isna().values[0] else f'{int(df_data_on_date["obitosNovos"].values[0]):,}'.replace(",", ".")
+
     return (
         recuperados_novos,
         acompanhamentos_novos,
@@ -232,11 +228,9 @@ def update_map(date):
     df_data_on_states = df_states[df_states["data"] == date]
 
     fig = px.choropleth_mapbox(df_data_on_states, locations="estado", geojson=brazil_states,
-                               center={"lat": CENTER_LAT, "lon": CENTER_LON},
-                               # https://www.google.com/maps/ -> right click -> get lat/lon
+                               center={"lat": CENTER_LAT, "lon": CENTER_LON}, # https://www.google.com/maps/ -> right click -> get lat/lon
                                zoom=4, color="casosAcumulado", color_continuous_scale="Redor", opacity=0.55,
-                               hover_data={"casosAcumulado": True, "casosNovos": True, "obitosNovos": True,
-                                           "estado": False}
+                               hover_data={"casosAcumulado": True, "casosNovos": True, "obitosNovos": True,"estado": False}
                                )
 
     fig.update_layout(paper_bgcolor="#242424", mapbox_style="carto-darkmatter", autosize=True,
